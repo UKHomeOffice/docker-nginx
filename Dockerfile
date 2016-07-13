@@ -1,8 +1,8 @@
 FROM alpine:3.4
 
-RUN apk upgrade --no-cache
-RUN apk add --no-cache nginx bash
+RUN apk upgrade --no-cache && apk add --no-cache nginx bash
 
-ADD bin/run.sh /run.sh
+COPY bin/run.sh /run.sh
+COPY conf.d /etc/nginx/conf.d
 
 ENTRYPOINT ["/run.sh"]
