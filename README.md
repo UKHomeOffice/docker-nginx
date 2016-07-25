@@ -33,6 +33,7 @@ http {
         server_name  _;
 
         location / {
+            default_type text/plain;
             return 200 "Everything is OK.\n";
         }
     }
@@ -42,17 +43,25 @@ EOF
 
 ```
 export NGINX_CONFIG
-docker run -ti --rm -e NGINX_CONFIG quay.io/ukhomeofficedigital/nginx:v0.0.1 
+docker run -ti --rm -e NGINX_CONFIG quay.io/ukhomeofficedigital/nginx:v0.0.1
 ```
 
 #### Config file via env variable
 You can provide a config file inside a container instead.
 
 ```
-docker run -ti --rm -e NGINX_CONFIG_FILE=/config/nginx.conf quay.io/ukhomeofficedigital/nginx:v0.0.1 
+docker run -ti --rm -e NGINX_CONFIG_FILE=/config/nginx.conf quay.io/ukhomeofficedigital/nginx:v0.0.1
 ```
 
 
 ### Extra Configs
 
-TODO
+Extra config snippets can be found in [conf.d](conf.d) directory. You can
+include specific files or all by adding the following to the main `nginx.conf`
+file:
+
+```
+include /etc/nginx/conf.d/logging.conf;
+
+```
+
