@@ -1,8 +1,10 @@
 # docker-nginx
-Minimal bare nginx docker image
-
+Minimal bare nginx docker image.
 
 ### Configuration
+Bare in mind, that this container does not run as root, so you won't be able to
+bind to privileged ports.
+
 There are two ways to pass nginx configuration.
 
 #### Config block via env variable
@@ -10,7 +12,6 @@ Read in a config block preserving new lines, etc.
 
 ```
 read -r -d '' NGINX_CONFIG <<'EOF'
-user nginx;
 worker_processes auto;
 error_log /dev/stderr error;
 
@@ -29,8 +30,9 @@ http {
     default_type        application/octet-stream;
 
     server {
-        listen       80 default_server;
+        listen       10080 default_server;
         server_name  _;
+        access_log   /dev/stdout;
 
         location / {
             default_type text/plain;
@@ -43,14 +45,14 @@ EOF
 
 ```
 export NGINX_CONFIG
-docker run -ti --rm -e NGINX_CONFIG quay.io/ukhomeofficedigital/nginx:v0.0.1
+docker run -ti --rm -e NGINX_CONFIG quay.io/ukhomeofficedigital/nginx:latest
 ```
 
 #### Config file via env variable
 You can provide a config file inside a container instead.
 
 ```
-docker run -ti --rm -e NGINX_CONFIG_FILE=/config/nginx.conf quay.io/ukhomeofficedigital/nginx:v0.0.1
+docker run -ti --rm -e NGINX_CONFIG_FILE=/config/nginx.conf quay.io/ukhomeofficedigital/nginx:latest
 ```
 
 
