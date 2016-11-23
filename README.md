@@ -1,6 +1,8 @@
 # docker-nginx
 Minimal bare nginx docker image.
 
+[![Build Status](https://drone.digital.homeoffice.gov.uk/api/badges/UKHomeOffice/docker-nginx/status.svg)](https://drone.digital.homeoffice.gov.uk/UKHomeOffice/docker-nginx)
+
 ### Configuration
 Bare in mind, that this container does not run as root, so you won't be able to
 bind to privileged ports.
