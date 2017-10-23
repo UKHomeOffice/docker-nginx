@@ -1,7 +1,7 @@
 FROM alpine:3.5
 
 RUN apk upgrade --no-cache && \
-    apk add --no-cache nginx bash nginx-mod-http-lua && \
+    apk add --no-cache nginx bash nginx-mod-http-lua curl && \
     install -d -g nginx -o nginx /run/nginx && \
     chown -R nginx:nginx /etc/nginx /var/log/nginx
 
