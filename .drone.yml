@@ -18,7 +18,7 @@ pipeline:
       - apk update && apk add curl
       - docker ps -a --filter "name=nginx-test" --filter "status=exited" | grep nginx-test && docker logs nginx-test || echo "The container started successfully?"
 #      - curl http://$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx-test)
-      - docker curl -s -f http://172.17.0.1:10080
+      - curl -s -f http://172.17.0.1:10080
       
   latest_image_to_quay:
     image: docker:17.09.0-ce
