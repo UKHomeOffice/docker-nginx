@@ -12,14 +12,13 @@ pipeline:
       - DOCKER_HOST=tcp://172.17.0.1:2375
       - NGINX_CONFIG_FILE=/nginx.conf
     commands:
-      - docker ps -a --filter "name=nginx-test" | grep nginx-test && docker rm nginx-test || echo "nginx-test container not found..." && docker ps -a
-      - docker ps -a
+      - docker ps -a --filter "name=nginx-test" | grep nginx-test && docker stop nginx-test && docker rm nginx-test || echo "nginx-test container not found..."
       - docker run --name nginx-test -e NGINX_CONFIG_FILE=/nginx.conf -v $${PWD}/tests/nginx.conf:/nginx.conf -d nginx:$${DRONE_COMMIT_SHA}
       - sleep 3
       - apk update && apk add curl
-      - docker ps -a --filter "name=nginx-test"
-      - docker logs nginx-test
-      - curl http://$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx-test)
+      - docker ps -a --filter "name=nginx-test" --filter "status=exited" | grep nginx-test && docker logs nginx-test || echo "The container started successfully?"
+#      - curl http://$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx-test)
+      - docker curl -s -f http://172.17.0.1:10080
       
   latest_image_to_quay:
     image: docker:17.09.0-ce
