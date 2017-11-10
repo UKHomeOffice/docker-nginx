@@ -12,6 +12,7 @@ pipeline:
       - DOCKER_HOST=tcp://172.17.0.1:2375
       - NGINX_CONFIG_FILE=/nginx.conf
     commands:
+      - set -x
       - docker ps -a --filter "name=nginx-test" | grep nginx-test && docker stop nginx-test && docker rm nginx-test || echo "nginx-test container not found..."
       - docker run --name nginx-test -e NGINX_CONFIG_FILE=/nginx.conf -v $${PWD}/tests/nginx.conf:/nginx.conf -d nginx:$${DRONE_COMMIT_SHA}
       - sleep 3
