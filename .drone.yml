@@ -13,7 +13,7 @@ pipeline:
     commands:
       - set -x
       - docker ps -a --filter "name=nginx-test" | grep nginx-test && docker stop nginx-test && docker rm nginx-test || echo "nginx-test container not found..."
-      - docker run --name nginx-test -e NGINX_CONFIG_FILE=$${PWD}/tests//nginx.conf -d nginx:$${DRONE_COMMIT_SHA}
+      - docker run --name nginx-test -e NGINX_CONFIG_FILE=/nginx.conf -d nginx:$${DRONE_COMMIT_SHA}
       - sleep 3
       - apk update && apk add curl
       - docker ps -a --filter "name=nginx-test" --filter "status=exited" | grep nginx-test && docker logs nginx-test || echo "The container started successfully?"

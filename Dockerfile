@@ -7,6 +7,7 @@ RUN apk upgrade --no-cache && \
 
 COPY bin/run.sh /run.sh
 COPY conf.d /etc/nginx/conf.d
+COPY tests/nginx.conf /nginx.conf
 
 USER nginx
 ENTRYPOINT ["/run.sh"]
