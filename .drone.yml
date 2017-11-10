@@ -11,7 +11,6 @@ pipeline:
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
-#      - set -x
       - |
         if docker ps -a --filter "name=nginx-test" | grep nginx-test &>/dev/null; then
           echo "Removing old nginx-test container..."
@@ -19,11 +18,9 @@ pipeline:
         else
           echo "No nginx-test container found..."
         fi
-#      - docker ps -a --filter "name=nginx-test" | grep nginx-test && docker stop nginx-test && docker rm nginx-test || echo "nginx-test container not found..."
       - docker run --name nginx-test -e NGINX_CONFIG_FILE=/nginx.conf -d nginx:$${DRONE_COMMIT_SHA}
       - sleep 3
       - apk update && apk add curl
-#      - docker ps -a --filter "name=nginx-test" --filter "status=exited" | grep nginx-test && docker logs nginx-test || echo "The container started successfully?" && docker ps -a --filter "name=nginx-test"
       - curl -sf http://$$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx-test):10080
 
   latest_image_to_quay:
