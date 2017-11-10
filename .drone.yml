@@ -6,32 +6,20 @@ pipeline:
     commands:
       - docker build -t nginx:$${DRONE_COMMIT_SHA} .
 
-#  test:
-#    image: docker:17.09.0-ce
-#    environment:
-#      - DOCKER_HOST=tcp://172.17.0.1:2375
-#    commands:
-#      - set -x
-#      - docker ps -a --filter "name=nginx-test" | grep nginx-test && docker stop nginx-test && docker rm nginx-test || echo "nginx-test container not found..."
-#      - docker run --name nginx-test -e NGINX_CONFIG_FILE=/nginx.conf -v $${PWD}/tests/nginx.conf:/nginx.conf -d nginx:$${DRONE_COMMIT_SHA}
-#      - sleep 3
-#      - apk update && apk add curl
-#      - docker ps -a --filter "name=nginx-test" --filter "status=exited" | grep nginx-test && docker logs nginx-test || echo "The container started successfully?"
-##      - curl http://$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx-test)
-#      - curl -v http://172.17.0.1:10080
-
   test:
-    image: nginx:${DRONE_COMMIT_SHA}
+    image: docker:17.09.0-ce
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
-      - NGINX_CONFIG_FILE=/nginx.conf
     commands:
-      - echo $${NGINX_CONFIG_FILE}
-      - curl -v localhost:10080
+      - set -x
+      - docker ps -a --filter "name=nginx-test" | grep nginx-test && docker stop nginx-test && docker rm nginx-test || echo "nginx-test container not found..."
+      - docker run --name nginx-test -e NGINX_CONFIG_FILE=$${PWD}/tests//nginx.conf -d nginx:$${DRONE_COMMIT_SHA}
+      - sleep 3
+      - apk update && apk add curl
+      - docker ps -a --filter "name=nginx-test" --filter "status=exited" | grep nginx-test && docker logs nginx-test || echo "The container started successfully?"
+#      - curl http://$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx-test)
       - curl -v http://172.17.0.1:10080
-    volumes:
-      - ${PWD}/tests/nginx.conf:/nginx.conf
-      
+
   latest_image_to_quay:
     image: docker:17.09.0-ce
     secrets:
