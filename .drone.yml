@@ -10,7 +10,6 @@ pipeline:
     image: docker:17.09.0-ce
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
-      - NGINX_CONFIG_FILE=/nginx.conf
     commands:
       - set -x
       - docker ps -a --filter "name=nginx-test" | grep nginx-test && docker stop nginx-test && docker rm nginx-test || echo "nginx-test container not found..."
