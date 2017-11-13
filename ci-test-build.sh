@@ -2,8 +2,6 @@
 
 # Runs a test nginx container
 
-set -x
-
 # Removes the test container and image
 clean_up() {
   if docker ps -a --filter "name=nginx-test" | grep nginx-test &>/dev/null; then
@@ -28,12 +26,8 @@ clean_up
 docker build -t nginx-test-image -f Dockerfile-test .
 docker run --name nginx-test -e NGINX_CONFIG_FILE=/nginx.conf -d nginx-test-image
 
-# debugging
-docker ps -a --filter "name=nginx-test" --filter "status=exited" | grep nginx-test && docker logs nginx-test && exit 1 || echo "Container started..."
-
 # Test the container/image
 sleep 3
-#apk update && apk add curl
 curl -sf http://$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx-test):10080
 
 clean_up
