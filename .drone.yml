@@ -19,7 +19,7 @@ pipeline:
       - docker build -t nginx:$${DRONE_COMMIT_SHA} .
     when:
       event: [push, tag]
-      tag: master
+      branch: master
 
   latest_image_to_quay:
     image: docker:17.09.0-ce
