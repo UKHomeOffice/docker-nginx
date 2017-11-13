@@ -18,7 +18,7 @@ pipeline:
     commands:
       - docker build -t nginx:$${DRONE_COMMIT_SHA} .
     when:
-      event: push, tag
+      event: [push, tag]
       tag: master
 
   latest_image_to_quay:
