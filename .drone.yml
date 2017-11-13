@@ -5,6 +5,7 @@ pipeline:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
       - apk update && apk add bash curl
+#      - ./test-clean-up.sh
       - docker build -t nginx-test-img -f Dockerfile-test .
       - docker run --name nginx-test -e NGINX_CONFIG_FILE=/nginx.conf -d nginx-test-img
       - sleep 3
