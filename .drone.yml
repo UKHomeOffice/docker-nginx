@@ -23,7 +23,7 @@ pipeline:
       - docker ps -a --filter "name=nginx-test" | grep nginx-test && docker logs nginx-test
       - var=$(docker logs nginx-test)
       - |
-        if [[ var == "[error]*" ]]; then
+        if [[ $var == [error]* ]]; then
           exit 1
         fi
       - sleep 3
