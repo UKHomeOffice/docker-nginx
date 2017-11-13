@@ -4,6 +4,7 @@ pipeline:
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
+      - apk update && apk add bash curl
       - ./ci-test-build.sh
 
   build_docker_image:
@@ -12,8 +13,9 @@ pipeline:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
       - docker build -t nginx:$${DRONE_COMMIT_SHA} .
-    event: push, tag
-    tag: master
+    when:
+      event: push, tag
+      tag: master
 
   latest_image_to_quay:
     image: docker:17.09.0-ce

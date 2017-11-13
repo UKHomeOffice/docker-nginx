@@ -16,7 +16,7 @@ docker ps -a --filter "name=nginx-test" --filter "status=exited" | grep nginx-te
 
 # Test the container/image
 sleep 3
-apk update && apk add curl
+#apk update && apk add curl
 curl -sf http://$$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx-test):10080
 
 clean_up
