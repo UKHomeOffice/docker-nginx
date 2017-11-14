@@ -1,49 +1,51 @@
 pipeline:
-  build_docker_image:
-    image: docker:1.12
-    environment:
-      - DOCKER_HOST=tcp://127.0.0.1:2375
-    commands:
-      - docker build -t image .
-
   test:
-    image: docker:1.12
+    image: docker:17.09.0-ce
     environment:
-      - DOCKER_HOST=tcp://127.0.0.1:2375
+      - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
-      - docker run --name nginx-test -e NGINX_CONFIG_FILE=/nginx.conf --net=host -v ${PWD}/tests/nginx.conf:/nginx.conf -d image
+      - apk update && apk add bash curl
+      - docker build -t nginx-test-img -f Dockerfile-test .
+      - docker run --name nginx-test -e NGINX_CONFIG_FILE=/nginx.conf -d nginx-test-img
       - sleep 3
-      - curl -s -f http://127.0.0.1:10080
+      - curl -sf http://$$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx-test):10080
+      - ./test-clean-up.sh
+
+  build_docker_image:
+    image: docker:17.09.0-ce
+    environment:
+      - DOCKER_HOST=tcp://172.17.0.1:2375
+    commands:
+      - docker build -t nginx:$${DRONE_COMMIT_SHA} .
+    when:
+      event: [push, tag]
+      branch: master
 
   latest_image_to_quay:
-    image: docker:1.12
+    image: docker:17.09.0-ce
+    secrets:
+      - docker_password
     environment:
-      - DOCKER_HOST=tcp://127.0.0.1:2375
+      - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
-      - docker login -u="ukhomeofficedigital+drone_nginx" -p=${DOCKER_PASSWORD} quay.io
-      - docker tag image quay.io/ukhomeofficedigital/nginx:latest
-      - docker tag image quay.io/ukhomeofficedigital/nginx:${DRONE_COMMIT_SHA}
+      - docker login -u="ukhomeofficedigital+drone_nginx" -p=$${DOCKER_PASSWORD} quay.io
+      - docker tag nginx:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/nginx:latest
+      - docker tag nginx:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/nginx:$${DRONE_COMMIT_SHA}
       - docker push quay.io/ukhomeofficedigital/nginx:latest
-      - docker push quay.io/ukhomeofficedigital/nginx:${DRONE_COMMIT_SHA}
+      - docker push quay.io/ukhomeofficedigital/nginx:$${DRONE_COMMIT_SHA}
     when:
       event: push
       branch: master
-
+ 
   tag_image_to_quay:
-    image: docker:1.12
+    image: docker:17.09.0-ce
+    secrets:
+      - docker_password
     environment:
-      - DOCKER_HOST=tcp://127.0.0.1:2375
+      - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
-      - docker login -u="ukhomeofficedigital+drone_nginx" -p=${DOCKER_PASSWORD} quay.io
-      - docker tag image quay.io/ukhomeofficedigital/nginx:${DRONE_TAG}
-      - docker push quay.io/ukhomeofficedigital/nginx:${DRONE_TAG}
+      - docker login -u="ukhomeofficedigital+drone_nginx" -p=$${DOCKER_PASSWORD} quay.io
+      - docker tag nginx:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/nginx:$${DRONE_TAG}
+      - docker push quay.io/ukhomeofficedigital/nginx:$${DRONE_TAG}
     when:
       event: tag
-
-services:
-  dind:
-    image: docker:1.12-dind
-    privileged: true
-    command:
-      - "-s"
-      - "overlay"
