@@ -36,7 +36,7 @@ pipeline:
     when:
       event: push
       branch: master
- 
+
   tag_image_to_quay:
     image: docker:17.09.0-ce
     secrets:
