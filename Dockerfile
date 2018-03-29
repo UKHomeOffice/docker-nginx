@@ -1,4 +1,4 @@
-FROM alpine:3.5
+FROM alpine:3.7
 
 RUN apk upgrade --no-cache && \
     apk add --no-cache nginx bash nginx-mod-http-lua && \
@@ -8,5 +8,7 @@ RUN apk upgrade --no-cache && \
 COPY bin/run.sh /run.sh
 COPY conf.d /etc/nginx/conf.d
 
-USER nginx
+# UID for nginx user
+USER 100
+
 ENTRYPOINT ["/run.sh"]
