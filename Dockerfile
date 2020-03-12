@@ -1,4 +1,4 @@
-FROM alpine:3.7
+FROM alpine:3.9
 
 RUN apk upgrade --no-cache && \
     apk add --no-cache nginx bash nginx-mod-http-lua && \
