@@ -1,14 +1,15 @@
 pipeline:
   test:
-    image: docker:17.09.0-ce
+    image: docker:17.09.0-dind
     environment:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
       - apk update && apk add bash curl
       - docker build -t nginx-test-img -f Dockerfile-test .
-      - docker run --name nginx-test -e NGINX_CONFIG_FILE=/nginx.conf -d nginx-test-img
-      - sleep 3
-      - curl -sf http://$$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nginx-test):10080
+      - docker run --network-alias test0 -e NGINX_CONFIG_FILE=/nginx.conf -d nginx-test-img
+      - sleep 5
+      - docker ps -a
+      - curl -vv -sf http://test0:10080/
       - ./test-clean-up.sh
 
   build_docker_image:
