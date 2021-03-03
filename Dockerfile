@@ -11,4 +11,4 @@ COPY conf.d /etc/nginx/conf.d
 # UID for nginx user
 USER 100
 
-ENTRYPOINT ["/run.sh"]
+CMD ["/run.sh"]
